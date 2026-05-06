@@ -410,13 +410,33 @@ function showDetail(name) {
   imgDiv.innerHTML = "";
 
   if (name === "細胞骨格") {
+
+    const container = document.createElement("div");
+    container.style.display = "flex";
+    container.style.justifyContent = "center";
+    container.style.gap = "20px";
+
     ["アクチンフィラメント","微小管","中間径フィラメント"].forEach(n => {
+
+      const item = document.createElement("div");
+      item.style.textAlign = "center";
+
       const img = document.createElement("img");
       img.src = `cell/explanation/${currentType}/${n}.png`;
       img.style.width = "200px";
-      img.style.margin = "10px";
-      imgDiv.appendChild(img);
+
+      const label = document.createElement("div");
+      label.textContent = n;
+      label.style.marginTop = "6px";
+      label.style.fontWeight = "bold";
+
+      item.appendChild(img);
+      item.appendChild(label);
+
+      container.appendChild(item);
     });
+
+    imgDiv.appendChild(container);
   } else {
     const img = document.createElement("img");
     img.src = `cell/explanation/${currentType}/${name}.png`;
@@ -610,8 +630,38 @@ function judgeQuiz(isCorrect, answer) {
   document.getElementById("quiz-judge").textContent =
     isCorrect ? "正解！" : "ざんねん、不正解...";
   document.getElementById("quiz-answer-name").textContent = answer;
-  document.getElementById("quiz-answer-image").innerHTML =
-    `<img src="cell/quiz/${quizCellType}/${getQuizImage(answer)}.png" style="width:250px">`;
+  const answerImageDiv = document.getElementById("quiz-answer-image");
+
+  // 細胞骨格だけ特別処理
+  if (answer === "細胞骨格") {
+    answerImageDiv.innerHTML = `
+      <div style="display:flex; justify-content:center; gap:20px;">
+        <div style="text-align:center;">
+          <img src="cell/quiz/${quizCellType}/アクチンフィラメント.png" style="width:180px;"><br>
+          アクチンフィラメント
+        </div>
+
+        <div style="text-align:center;">
+          <img src="cell/quiz/${quizCellType}/中間径フィラメント.png" style="width:180px;"><br>
+          中間径フィラメント
+        </div>
+
+        <div style="text-align:center;">
+          <img src="cell/quiz/${quizCellType}/微小管.png" style="width:180px;"><br>
+          微小管
+        </div>
+
+      </div>
+    `;
+  } else {
+
+    answerImageDiv.innerHTML = `
+      <div style="text-align:center;">
+        <img src="cell/quiz/${quizCellType}/${getQuizImage(answer)}.png" style="width:250px;"><br>
+        ${answer}
+      </div>
+    `;
+  }
 
   document.getElementById("quiz-answer-desc").innerHTML =
     descriptions[answer].replace(/\n/g, "<br>");
