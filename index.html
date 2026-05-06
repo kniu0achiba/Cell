@@ -11,6 +11,7 @@ body {
   font-family: "Meiryo", sans-serif;
   background-color: #eef7ee;
   text-align: center;
+  overflow-x: hidden;   /* ← 横スクロール禁止 */
 }
 
 h1, h2 {
@@ -81,6 +82,11 @@ img.main-cell {
   padding: 10px;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 .vertical-options {
   display: block;
 }
@@ -106,6 +112,10 @@ img.main-cell {
 .wrong {
   color: blue;
   font-size: 24px;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 /* ===== タブレット（iPadなど） ===== */
@@ -144,9 +154,14 @@ img.main-cell {
     font-size: 16px;
     padding: 16px 30px;
   }
+  
+  .organ-list {
+    align-items: flex-start;   /* ← 左揃え */
+  }
 
   .organ-button {
-    width: 100%;   /* 横並び → 縦並びに近づく */
+    width: 95%;
+    text-align: left;
   }
 
   .organ-button img {
@@ -158,6 +173,11 @@ img.main-cell {
   }
 
   .organ-list {
+    flex-direction: column;
+    align-items: center;
+  }
+ 
+  .skeleton-container {
     flex-direction: column;
     align-items: center;
   }
@@ -412,6 +432,7 @@ function showDetail(name) {
   if (name === "細胞骨格") {
 
     const container = document.createElement("div");
+    container.className = "skeleton-container";
     container.style.display = "flex";
     container.style.justifyContent = "center";
     container.style.gap = "20px";
