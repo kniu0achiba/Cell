@@ -78,8 +78,22 @@ img.main-cell {
 .organ-button {
   width: 140px;
   margin: 10px;
-  text-align: left;
-  padding: 10px;
+  padding: 12px;
+  background-color: #dff5e3;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #9fd4ae;
+}
+
+.organ-button:hover {
+  background-color: #b7e2c1;
+  transform: scale(1.05);
+}
+
+.organ-button:active {
+  transform: scale(0.95);
+  background-color: #a5d6b2;
 }
 
 img {
@@ -96,6 +110,10 @@ img {
   margin: 10px auto;
   text-align: left;
   line-height: 1.6;
+  background-color: #f0fff4;
+  border: 2px solid #8fd19e;
+  padding: 14px;
+  border-radius: 12px;
 }
 
 .organ-button img {
@@ -158,6 +176,8 @@ img {
   .organ-button {
     width: 95%;
     text-align: left;
+    padding: 14px;
+    font-size: 16px;
   }
 
   .organ-button img {
