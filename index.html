@@ -4,21 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>細胞や細胞小器官について知ろう！</title>
-
 <style>
 body {
   margin: 0;
-  font-family: "Meiryo", sans-serif;
+  font-family: "Meiryo", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
   background-color: #eef7ee;
   text-align: center;
-  overflow-x: hidden;   /* ← 横スクロール禁止 */
 }
 
 h1, h2 {
   color: #2f6f3e;
 }
 
-button {
+button, .organ-button {
   background-color: #b7e2c1;
   border: none;
   padding: 12px 24px;
@@ -26,9 +24,10 @@ button {
   font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
-button:hover {
+button:hover, .organ-button:hover {
   background-color: #9fd4ae;
 }
 
@@ -39,6 +38,7 @@ button:hover {
 
 img.main-cell {
   width: 400px;
+  max-width: 90%;
   margin: 10px;
 }
 
@@ -51,6 +51,11 @@ img.main-cell {
 #quiz-instruction {
   font-size: 18px;
   margin: 16px 0 8px 0;
+}
+
+#quiz-prompt {
+  white-space: pre-line;
+  line-height: 1.7;
 }
 
 #quiz-score {
@@ -73,32 +78,18 @@ img.main-cell {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 8px;
 }
 
 .organ-button {
-  width: 140px;
-  margin: 10px;
-  padding: 12px;
-  background-color: #dff5e3;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid #9fd4ae;
+  width: 160px;
+  text-align: center;
+  user-select: none;
 }
 
-.organ-button:hover {
-  background-color: #b7e2c1;
-  transform: scale(1.05);
-}
-
-.organ-button:active {
-  transform: scale(0.95);
-  background-color: #a5d6b2;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
+.organ-button.option-text {
+  text-align: left;
+  line-height: 1.6;
 }
 
 .vertical-options {
@@ -107,17 +98,10 @@ img {
 
 .vertical-options .organ-button {
   width: 90%;
+  max-width: 900px;
   margin: 10px auto;
   text-align: left;
   line-height: 1.6;
-  background-color: #f0fff4;
-  border: 2px solid #8fd19e;
-  padding: 14px;
-  border-radius: 12px;
-}
-
-.vertical-options .organ-button:hover {
-  background-color: #d6f2dc;
 }
 
 .organ-button img {
@@ -136,180 +120,202 @@ img {
   font-size: 24px;
 }
 
-* {
-  box-sizing: border-box;
+.detail-text, #quiz-answer-desc {
+  max-width: 900px;
+  margin: 16px auto;
+  line-height: 1.8;
+  text-align: left;
+  white-space: normal;
 }
 
-/* ===== タブレット（iPadなど） ===== */
+.debug-message {
+  color: #b00020;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
 @media screen and (max-width: 1024px) {
-
-  h1 {
-    font-size: 26px;
-  }
-
-  h2 {
-    font-size: 22px;
-  }
-
-  button {
-    font-size: 18px;
-    padding: 14px 28px;
-  }
-
-  .organ-button img {
-    width: 60px;   /* 一覧の図を少し大きく */
-  }
+  h1 { font-size: 26px; }
+  h2 { font-size: 22px; }
+  button, .organ-button { font-size: 18px; padding: 14px 28px; }
+  .organ-button img { width: 60px; }
 }
 
-/* ===== スマホ ===== */
 @media screen and (max-width: 600px) {
-
-  h1 {
-    font-size: 22px;
-  }
-
-  h2 {
-    font-size: 18px;
-  }
-
-  button {
-    font-size: 16px;
-    padding: 16px 30px;
-  }
-  
-  .organ-button {
-    width: 95%;
-    text-align: left;
-    padding: 14px;
-    font-size: 16px;
-  }
-
-  .organ-button img {
-    width: 70px;   /* 指でタップしやすい大きさ */
-  }
-
-  img.main-cell {
-    width: 90%;    /* 細胞全体図を画面に合わせる */
-  }
-
-  .organ-list {
-    flex-direction: column;
-    align-items: flex-start;   /* ← 左揃え */
-  }
- 
-  .skeleton-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
+  h1 { font-size: 22px; }
+  h2 { font-size: 18px; }
+  button, .organ-button { font-size: 16px; padding: 16px 24px; }
+  .organ-button { width: 100%; }
+  .organ-button img { width: 70px; }
+  img.main-cell { width: 90%; }
+  .organ-list { flex-direction: column; align-items: center; }
 }
 </style>
 </head>
-
 <body>
 
-<!-- タイトル画面 -->
 <div id="title" class="screen">
   <h1>細胞や細胞小器官について知ろう！</h1>
-  <button onclick="goLearnSelect()">細胞について学ぶ</button>
-  <button onclick="goQuizSelect()">細胞小器官問題</button>
+  <button type="button" onclick="goLearnSelect()">細胞について学ぶ</button>
+  <button type="button" onclick="goQuizSelect()">細胞小器官問題</button>
 </div>
 
-<!-- 学ぶ：動物・植物選択 -->
 <div id="learn-select" class="screen">
   <h2>細胞について学ぶ</h2>
-  <button onclick="startLearn('animal')">動物細胞</button>
-  <button onclick="startLearn('plant')">植物細胞</button>
+  <button type="button" onclick="startLearn('animal')">動物細胞</button>
+  <button type="button" onclick="startLearn('plant')">植物細胞</button>
   <br>
-  <button onclick="goTitle()">タイトルに戻る</button>
+  <button type="button" onclick="goTitle()">タイトルに戻る</button>
 </div>
 
-<!-- 細胞全体＋小器官一覧 -->
 <div id="learn-list" class="screen">
   <h2 id="learn-title"></h2>
-  <img id="cell-image" class="main-cell">
+  <img id="cell-image" class="main-cell" alt="細胞全体図">
   <p>下部に表示されている細胞小器官の図を押すと解説が出てきます。</p>
-
   <div id="organ-list" class="organ-list"></div>
-
-  <button onclick="goTitle()">タイトルに戻る</button>
+  <button type="button" onclick="goTitle()">タイトルに戻る</button>
 </div>
 
-<!-- 小器官説明画面 -->
 <div id="learn-detail" class="screen">
   <h2 id="detail-name"></h2>
   <div id="detail-images"></div>
-  <p id="detail-text"></p>
-
-  <button onclick="goBack()">一つ前の画面に戻る</button>
-  <button onclick="goTitle()">タイトルに戻る</button>
+  <p id="detail-text" class="detail-text"></p>
+  <button type="button" onclick="goBack()">一つ前の画面に戻る</button>
+  <button type="button" onclick="goTitle()">タイトルに戻る</button>
 </div>
 
-<!-- ===============================
- 細胞小器官問題：モード選択
-=============================== -->
 <div id="quiz-select" class="screen">
   <h2>細胞小器官問題</h2>
-  <button onclick="startQuizCell('animal')">動物細胞</button>
-  <button onclick="startQuizCell('plant')">植物細胞</button>
+  <button type="button" onclick="startQuizCell('animal')">動物細胞</button>
+  <button type="button" onclick="startQuizCell('plant')">植物細胞</button>
   <br>
-  <button onclick="goTitle()">タイトルに戻る</button>
+  <button type="button" onclick="goTitle()">タイトルに戻る</button>
 </div>
 
 <div id="quiz-mode-select" class="screen">
   <h2 id="quiz-cell-title"></h2>
-  <button onclick="selectQuizMode('img-to-name-easy')">図→細胞小器官名</button>
-  <button onclick="selectQuizMode('img-to-desc')">図→細胞小器官の説明</button>
-  <button onclick="selectQuizMode('name-to-img')">細胞小器官名→図</button>
-  <button onclick="selectQuizMode('desc-to-img')">細胞小器官の説明→図</button>
+  <button type="button" onclick="selectQuizMode('img-to-name-easy')">図→細胞小器官名</button>
+  <button type="button" onclick="selectQuizMode('img-to-desc')">図→細胞小器官の説明</button>
+  <button type="button" onclick="selectQuizMode('name-to-img')">細胞小器官名→図</button>
+  <button type="button" onclick="selectQuizMode('desc-to-img')">細胞小器官の説明→図</button>
+  <br>
+  <button type="button" onclick="goQuizSelect()">細胞選択に戻る</button>
+  <button type="button" onclick="goTitle()">タイトルに戻る</button>
 </div>
 
-<!-- ===============================
- 問題画面
-=============================== -->
 <div id="quiz-question" class="screen">
   <h2 id="quiz-mode-title"></h2>
-
-  <!-- 常に表示する細胞全体図 -->
   <h3 id="quiz-cell-label"></h3>
-  <img id="quiz-cell-image" class="main-cell">
-
+  <img id="quiz-cell-image" class="main-cell" alt="細胞全体図">
   <p id="quiz-instruction"></p>
   <div id="quiz-prompt"></div>
   <div id="quiz-options" class="organ-list"></div>
 </div>
 
-<!-- ===============================
- 正誤・解説画面
-=============================== -->
 <div id="quiz-result" class="screen">
   <h2 id="quiz-judge"></h2>
   <h3 id="quiz-answer-name"></h3>
   <div id="quiz-answer-image"></div>
   <p id="quiz-answer-desc"></p>
-  <button onclick="nextQuiz()">次の問題へ</button>
+  <button type="button" onclick="nextQuiz()">次の問題へ</button>
 </div>
 
-<!-- ===============================
- 集計画面
-=============================== -->
 <div id="quiz-summary" class="screen">
   <h2>結果</h2>
   <p id="quiz-score">
     <span id="quiz-score-correct"></span>
     <span id="quiz-score-total"></span>
   </p>
-  <button onclick="restartQuiz()">もう一度遊ぶ</button>
-  <button onclick="goTitle()">タイトルに戻る</button>
+  <button type="button" onclick="restartQuiz()">もう一度遊ぶ</button>
+  <button type="button" onclick="goTitle()">タイトルに戻る</button>
 </div>
 
 <script>
+'use strict';
+
+/* ====== 画像ファイル名対応表 ====== */
+const imageFileNames = {
+  "核": "nucleus",
+  "ミトコンドリア": "mitochondria",
+  "滑面小胞体": "smooth_er",
+  "粗面小胞体": "rough_er",
+  "ゴルジ体": "golgi_apparatus",
+  "リボソーム": "ribosome",
+  "リソソーム": "lysosome",
+  "細胞質基質": "cytosol",
+  "細胞骨格": "cytoskeleton",
+  "中心体": "centrosome",
+  "細胞膜": "cell_membrane",
+  "葉緑体": "chloroplast",
+  "液胞": "vacuole",
+  "細胞壁": "cell_wall",
+  "動物細胞": "animal_cell",
+  "植物細胞": "plant_cell",
+  "アクチンフィラメント": "actin_filament",
+  "微小管": "microtubule",
+  "中間径フィラメント": "intermediate_filament"
+};
+
+function getImageFileName(name) {
+  return imageFileNames[name] || name;
+}
+
+function getCellName(type) {
+  return type === "animal" ? "動物細胞" : "植物細胞";
+}
+
+function getCellImageFileName(type) {
+  return type === "animal" ? "animal_cell" : "plant_cell";
+}
+
+function getOrganImageName(name) {
+  return name === "細胞骨格" ? "アクチンフィラメント" : name;
+}
+
+function getOrganImageFileName(name) {
+  return getImageFileName(getOrganImageName(name));
+}
+
+function makePath(section, type, fileName) {
+  return "cell/" + section + "/" + type + "/" + fileName + ".png";
+}
+
+function createImage(src, width, altText) {
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = altText || "";
+  if (width) img.style.width = width;
+  img.onerror = function() {
+    console.error("画像読み込み失敗:", src);
+    img.alt = "画像が読み込めません: " + src;
+    const msg = document.createElement("div");
+    msg.className = "debug-message";
+    msg.textContent = "画像が読み込めません: " + src;
+    if (img.parentNode && !img.nextSibling) {
+      img.parentNode.appendChild(msg);
+    }
+  };
+  return img;
+}
+
+function setTextWithLineBreaks(element, text) {
+  element.textContent = "";
+  const lines = String(text).split("\n");
+  lines.forEach(function(line, index) {
+    if (index > 0) element.appendChild(document.createElement("br"));
+    element.appendChild(document.createTextNode(line));
+  });
+}
+
 /* ====== 画面管理 ====== */
 let historyStack = [];
 
 function show(screenId) {
-  document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
-  document.getElementById(screenId).style.display = "block";
+  document.querySelectorAll(".screen").forEach(function(screen) {
+    screen.style.display = "none";
+  });
+  const target = document.getElementById(screenId);
+  if (target) target.style.display = "block";
 }
 
 function push(screenId) {
@@ -319,7 +325,11 @@ function push(screenId) {
 
 function goBack() {
   historyStack.pop();
-  show(historyStack[historyStack.length - 1]);
+  if (historyStack.length === 0) {
+    show("title");
+  } else {
+    show(historyStack[historyStack.length - 1]);
+  }
 }
 
 function goTitle() {
@@ -337,77 +347,41 @@ function goQuizSelect() {
   push("quiz-select");
 }
 
-/* ====== データ（Excel対応） ====== */
-
-// 使用図（順番固定）
+/* ====== データ ====== */
 const useList = {
   animal: [
-    "核",
-    "ミトコンドリア",
-    "滑面小胞体",
-    "粗面小胞体",
-    "ゴルジ体",
-    "リボソーム",
-    "リソソーム",
-    "細胞質基質",
-    "細胞骨格",
-    "中心体",
-    "細胞膜"
+    "核", "ミトコンドリア", "滑面小胞体", "粗面小胞体", "ゴルジ体",
+    "リボソーム", "リソソーム", "細胞質基質", "細胞骨格", "中心体", "細胞膜"
   ],
   plant: [
-    "核",
-    "葉緑体",
-    "滑面小胞体",
-    "粗面小胞体",
-    "ゴルジ体",
-    "ミトコンドリア",
-    "リボソーム",
-    "細胞質基質",
-    "細胞骨格",
-    "液胞",
-    "細胞壁",
-    "細胞膜"
+    "核", "葉緑体", "滑面小胞体", "粗面小胞体", "ゴルジ体", "ミトコンドリア",
+    "リボソーム", "細胞質基質", "細胞骨格", "液胞", "細胞壁", "細胞膜"
   ]
 };
 
-// 説明文（図と説明シート対応）
 const descriptions = {
   "核": "核の保護などをしている。\n2枚の薄い膜からなり、核膜孔とよばれる小さな孔が多数ある。核膜孔は核と細胞質の間での物質の通路となる。",
-  
   "ミトコンドリア": "呼吸によって有機物を分解しATPを合成する。\n2枚の膜構造からなり、ひだ状になった内膜の部分を特にクリステとよばれる。基質（内膜の内側）はマトリックスとよばれ、独自のDNAを含む。",
-  
   "滑面小胞体": "脂質合成やカルシウムイオンの貯蔵を行う。\n1枚の膜からなり、一部は核膜や細胞膜ともつながっている。",
-  
   "粗面小胞体": "タンパク質の合成の場となる。\n粗面小胞体に付着しているリボソームがタンパク質を合成している。つくられたタンパク質はゴルジ体へ輸送される。",
-  
   "ゴルジ体": "細胞から物質の分泌（細胞外に物質を放出すること）を行っている。\n1枚の膜からなり、へん平な袋が重なった構造体である。",
-  
   "リボソーム": "タンパク質の合成を行う。\nRNAとタンパク質からなる小さな粒上の構造体である。雪だるまのような形をしている。\n粗面小胞体の表面に付着しているものと、細胞質に散在しているものがある。",
-
   "リソソーム": "細胞内での消化を行う。\n1枚の膜からなる球状の構造体である。加水分解酵素を含み、細胞内に取り込んだいらない物質を分解する。",
-  
   "細胞質基質": "解糖系によって有機物を分解し、ATPを合成する。\n細胞内の液状の部分であり、酵素など各種タンパク質やRNAなどを含む。",
-  
   "細胞骨格": "細胞の形の維持、細胞の運動、物質輸送に関わっている。\n細胞内部に広がる繊維状の構造であり、アクチンフィラメント、中間径フィラメント、微小管がある。",
-  
   "中心体": "細胞分裂時の紡錘体を形成する起点となる。\n筒状の構造をした2つの中心小体が直交したもの。",
-  
   "細胞膜": "細胞内外の物質の出入りを調節している。\nリン脂質とタンパク質からなる薄い膜で、脂質二重層ともよばれる。",
-  
   "葉緑体": "光合成によって、光エネルギーを吸収し、有機物を合成する。\n2枚の膜構造からなり、内部のチラコイド膜には光合成色素が存在する。",
-  
   "液胞": "物質や老廃物の貯蔵をしている。\n内部の細胞液には有機物や無機塩類などが溶けており、成長した植物細胞でよく発達している。",
-  
   "細胞壁": "細胞の保護と形の維持に関わっている。\nセルロースを主成分とする丈夫な構造である。"
 };
 
 /* ====== 学ぶモード ====== */
-
 let currentType = "";
 
 function startLearn(type) {
   currentType = type;
-  historyStack = ["title","learn-select"];
+  historyStack = ["title", "learn-select"];
   makeLearnList();
   push("learn-list");
 }
@@ -416,97 +390,76 @@ function makeLearnList() {
   const title = document.getElementById("learn-title");
   const cellImg = document.getElementById("cell-image");
   const listDiv = document.getElementById("organ-list");
+  const cellName = getCellName(currentType);
+  title.textContent = cellName;
+  cellImg.src = makePath("explanation", currentType, getCellImageFileName(currentType));
+  cellImg.alt = cellName + "の全体図";
+  listDiv.textContent = "";
 
-  title.textContent = (currentType === "animal") ? "動物細胞" : "植物細胞";
-  cellImg.src = `cell/explanation/${currentType}/${title.textContent}.png`;
-
-  listDiv.innerHTML = "";
-
-  useList[currentType].forEach(name => {
+  useList[currentType].forEach(function(name) {
     const div = document.createElement("div");
     div.className = "organ-button";
-
-    const imgName = (name === "細胞骨格") ? "アクチンフィラメント" : name;
-
-    div.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: center;">
-        <img 
-          src="cell/explanation/${currentType}/${imgName}.png"
-          style="width: 50px; margin-right: 6px;"
-          alt="${name} の図">
-        <span>：${name}</span>
-      </div>
-    `;
-    div.onclick = () => showDetail(name);
+    const inner = document.createElement("div");
+    inner.style.display = "flex";
+    inner.style.alignItems = "center";
+    inner.style.justifyContent = "center";
+    const imgFileName = getOrganImageFileName(name);
+    const img = createImage(makePath("explanation", currentType, imgFileName), "50px", name + " の図");
+    img.style.marginRight = "6px";
+    const span = document.createElement("span");
+    span.textContent = "：" + name;
+    inner.appendChild(img);
+    inner.appendChild(span);
+    div.appendChild(inner);
+    div.onclick = function() { showDetail(name); };
     listDiv.appendChild(div);
   });
 }
 
-/* ====== 小器官説明 ====== */
-
 function showDetail(name) {
   document.getElementById("detail-name").textContent = name;
   const imgDiv = document.getElementById("detail-images");
-  imgDiv.innerHTML = "";
+  imgDiv.textContent = "";
 
   if (name === "細胞骨格") {
-
     const container = document.createElement("div");
-    container.className = "skeleton-container";
     container.style.display = "flex";
     container.style.justifyContent = "center";
     container.style.gap = "20px";
+    container.style.flexWrap = "wrap";
 
-    ["アクチンフィラメント","微小管","中間径フィラメント"].forEach(n => {
-
+    ["アクチンフィラメント", "微小管", "中間径フィラメント"].forEach(function(n) {
       const item = document.createElement("div");
       item.style.textAlign = "center";
-
-      const img = document.createElement("img");
-      img.src = `cell/explanation/${currentType}/${n}.png`;
-      img.style.width = "200px";
-
+      const img = createImage(makePath("explanation", currentType, getImageFileName(n)), "200px", n + " の図");
       const label = document.createElement("div");
       label.textContent = n;
       label.style.marginTop = "6px";
       label.style.fontWeight = "bold";
-
       item.appendChild(img);
       item.appendChild(label);
-
       container.appendChild(item);
     });
-
     imgDiv.appendChild(container);
   } else {
-    const img = document.createElement("img");
-    img.src = `cell/explanation/${currentType}/${name}.png`;
-    img.style.width = "350px";
+    const img = createImage(makePath("explanation", currentType, getImageFileName(name)), "350px", name + " の図");
+    img.style.maxWidth = "90%";
     imgDiv.appendChild(img);
   }
 
-  document.getElementById("detail-text").innerHTML =
-  descriptions[name].replace(/\n/g, "<br>");
+  setTextWithLineBreaks(document.getElementById("detail-text"), descriptions[name]);
   push("learn-detail");
 }
 
-/* 初期表示 */
-show("title");
-
-/* ===============================
-  細胞小器官問題：データ
-=============================== */
-
+/* ====== クイズデータ ====== */
 const quizOrgans = {
   animal: [
-    "核","ミトコンドリア","滑面小胞体","粗面小胞体",
-    "ゴルジ体","リボソーム","リソソーム",
-    "細胞質基質","細胞骨格","中心体","細胞膜"
+    "核", "ミトコンドリア", "滑面小胞体", "粗面小胞体", "ゴルジ体",
+    "リボソーム", "リソソーム", "細胞質基質", "細胞骨格", "中心体", "細胞膜"
   ],
   plant: [
-    "核","葉緑体","滑面小胞体","粗面小胞体",
-    "ゴルジ体","リボソーム","ミトコンドリア",
-    "細胞質基質","細胞骨格","液胞","細胞壁","細胞膜"
+    "核", "葉緑体", "滑面小胞体", "粗面小胞体", "ゴルジ体", "リボソーム",
+    "ミトコンドリア", "細胞質基質", "細胞骨格", "液胞", "細胞壁", "細胞膜"
   ]
 };
 
@@ -516,111 +469,65 @@ let quizOrder = [];
 let quizIndex = 0;
 let quizCorrect = 0;
 
-/* ===============================
-  画面遷移開始
-=============================== */
-
 function startQuizCell(type) {
   quizCellType = type;
-  historyStack = ["title"];
-  document.getElementById("quiz-cell-title").textContent =
-    (type === "animal") ? "動物細胞" : "植物細胞";
+  historyStack = ["title", "quiz-select"];
+  document.getElementById("quiz-cell-title").textContent = getCellName(type);
   push("quiz-mode-select");
 }
 
 function selectQuizMode(mode) {
   quizMode = mode;
-  quizOrder = shuffle([...quizOrgans[quizCellType]]);
+  quizOrder = shuffle(quizOrgans[quizCellType].slice());
   quizIndex = 0;
   quizCorrect = 0;
   nextQuiz();
 }
 
-/* ===============================
-  出題処理
-=============================== */
-
 function nextQuiz() {
   if (quizIndex >= quizOrder.length) {
-    document.getElementById("quiz-score-correct").textContent =
-      `${quizCorrect} 点`;
-    document.getElementById("quiz-score-total").textContent =
-      ` / ${quizOrder.length} 点`;
+    document.getElementById("quiz-score-correct").textContent = quizCorrect + " 点";
+    document.getElementById("quiz-score-total").textContent = " / " + quizOrder.length + " 点";
     show("quiz-summary");
     return;
   }
 
   const answer = quizOrder[quizIndex];
   show("quiz-question");
+  document.getElementById("quiz-mode-title").textContent = quizModeTitle(quizMode);
 
-  document.getElementById("quiz-mode-title")
-    .textContent = quizModeTitle(quizMode);
-
-  // 細胞全体図
-  const cellName = (quizCellType === "animal") ? "動物細胞" : "植物細胞";
+  const cellName = getCellName(quizCellType);
   document.getElementById("quiz-cell-label").textContent = cellName;
-  document.getElementById("quiz-cell-image").src =
-    `cell/quiz/${quizCellType}/${cellName}.png`;
+  const quizCellImage = document.getElementById("quiz-cell-image");
+  quizCellImage.src = makePath("quiz", quizCellType, getCellImageFileName(quizCellType));
+  quizCellImage.alt = cellName + "の全体図";
 
   const prompt = document.getElementById("quiz-prompt");
   const options = document.getElementById("quiz-options");
-  options.innerHTML = "";
-
-  // モードごとにレイアウト変更
-  if (quizMode === "img-to-desc") {
-    options.className = "organ-list vertical-options";
-  } else {
-    options.className = "organ-list";
-  }
-
-  // 問題文エリア
   const instruction = document.getElementById("quiz-instruction");
 
-  // いったん初期化
+  options.textContent = "";
   instruction.textContent = "";
-  prompt.innerHTML = "";
+  prompt.textContent = "";
+  options.className = quizMode === "img-to-desc" ? "organ-list vertical-options" : "organ-list";
 
-  // ===== A：図 → 名前（易）=====
   if (quizMode === "img-to-name-easy") {
-    instruction.textContent =
-      "以下の選択肢から次の図で示されている細胞小器官の名前を選びなさい。";
-
-    prompt.innerHTML =
-      `<img src="cell/quiz/${quizCellType}/${getQuizImage(answer)}.png" style="width:220px;">`;
-  }
-
-  // ===== B：名前 → 図 =====
-  else if (quizMode === "name-to-img") {
-    instruction.textContent =
-      "以下の選択肢から次の細胞小器官を選びなさい。";
-
+    instruction.textContent = "以下の選択肢から次の図で示されている細胞小器官の名前を選びなさい。";
+    prompt.appendChild(createImage(makePath("quiz", quizCellType, getOrganImageFileName(answer)), "220px", answer + " の図"));
+  } else if (quizMode === "name-to-img") {
+    instruction.textContent = "以下の選択肢から次の細胞小器官を選びなさい。";
     prompt.textContent = answer;
-  }
-
-  // ===== C：説明 → 図 =====
-  else if (quizMode === "desc-to-img") {
-    instruction.textContent =
-      "以下の選択肢から次の細胞小器官を選びなさい。";
-
-    prompt.textContent = descriptions[answer];
-  }
-
-  // ===== D：図 → 説明 =====
-  else if (quizMode === "img-to-desc") {
-    instruction.textContent =
-      "以下の選択肢から次の細胞小器官の説明として適切な文を選びなさい。";
-
-    prompt.innerHTML =
-      `<img src="cell/quiz/${quizCellType}/${getQuizImage(answer)}.png" style="width:220px;">`;
+  } else if (quizMode === "desc-to-img") {
+    instruction.textContent = "以下の選択肢から次の細胞小器官を選びなさい。";
+    setTextWithLineBreaks(prompt, descriptions[answer]);
+  } else if (quizMode === "img-to-desc") {
+    instruction.textContent = "以下の選択肢から次の細胞小器官の説明として適切な文を選びなさい。";
+    prompt.appendChild(createImage(makePath("quiz", quizCellType, getOrganImageFileName(answer)), "220px", answer + " の図"));
   }
 
   makeOptions(answer, options);
   quizIndex++;
 }
-
-/* ===============================
-  選択肢生成
-=============================== */
 
 function makeOptions(answer, container) {
   let choices = [answer];
@@ -630,96 +537,73 @@ function makeOptions(answer, container) {
   }
   choices = shuffle(choices);
 
-  choices.forEach((choice, index) => {
+  choices.forEach(function(choice, index) {
     const div = document.createElement("div");
     div.className = "organ-button";
 
-    // ▼ 図を選ぶ問題
     if (quizMode === "name-to-img" || quizMode === "desc-to-img") {
-      div.innerHTML =
-        `<img src="cell/quiz/${quizCellType}/${getQuizImage(choice)}.png" style="width:120px">`;
-    }
-
-    // ▼ 説明文を選ぶ問題（★今回追加）
-    else if (quizMode === "img-to-desc") {
-      div.style.textAlign = "left";
-      div.innerHTML = `${index + 1}．${descriptions[choice]}`;
-    }
-
-    // ▼ 名前を選ぶ問題
-    else {
+      div.appendChild(createImage(makePath("quiz", quizCellType, getOrganImageFileName(choice)), "120px", choice + " の図"));
+    } else if (quizMode === "img-to-desc") {
+      div.className = "organ-button option-text";
+      div.appendChild(document.createTextNode(String(index + 1) + "．"));
+      setTextWithLineBreaks(div, String(index + 1) + "．" + descriptions[choice]);
+    } else {
       div.textContent = choice;
     }
 
-    div.onclick = () => judgeQuiz(choice === answer, answer);
+    div.onclick = function() { judgeQuiz(choice === answer, answer); };
     container.appendChild(div);
   });
-
 }
-
-/* ===============================
-  正誤判定・解説
-=============================== */
 
 function judgeQuiz(isCorrect, answer) {
   if (isCorrect) quizCorrect++;
   show("quiz-result");
 
-  document.getElementById("quiz-judge").className =
-    isCorrect ? "correct" : "wrong";
-
-  document.getElementById("quiz-judge").textContent =
-    isCorrect ? "正解！" : "ざんねん、不正解...";
+  const judge = document.getElementById("quiz-judge");
+  judge.className = isCorrect ? "correct" : "wrong";
+  judge.textContent = isCorrect ? "正解！" : "ざんねん、不正解...";
   document.getElementById("quiz-answer-name").textContent = answer;
+
   const answerImageDiv = document.getElementById("quiz-answer-image");
+  answerImageDiv.textContent = "";
 
-  // 細胞骨格だけ特別処理
   if (answer === "細胞骨格") {
-    answerImageDiv.innerHTML = `
-      <div style="display:flex; justify-content:center; gap:20px;">
-        <div style="text-align:center;">
-          <img src="cell/quiz/${quizCellType}/アクチンフィラメント.png" style="width:180px;"><br>
-          アクチンフィラメント
-        </div>
-
-        <div style="text-align:center;">
-          <img src="cell/quiz/${quizCellType}/中間径フィラメント.png" style="width:180px;"><br>
-          中間径フィラメント
-        </div>
-
-        <div style="text-align:center;">
-          <img src="cell/quiz/${quizCellType}/微小管.png" style="width:180px;"><br>
-          微小管
-        </div>
-
-      </div>
-    `;
+    const container = document.createElement("div");
+    container.style.display = "flex";
+    container.style.justifyContent = "center";
+    container.style.gap = "20px";
+    container.style.flexWrap = "wrap";
+    ["アクチンフィラメント", "中間径フィラメント", "微小管"].forEach(function(n) {
+      const item = document.createElement("div");
+      item.style.textAlign = "center";
+      item.appendChild(createImage(makePath("quiz", quizCellType, getImageFileName(n)), "180px", n + " の図"));
+      item.appendChild(document.createElement("br"));
+      item.appendChild(document.createTextNode(n));
+      container.appendChild(item);
+    });
+    answerImageDiv.appendChild(container);
   } else {
-
-    answerImageDiv.innerHTML = `
-      <div style="text-align:center;">
-        <img src="cell/quiz/${quizCellType}/${getQuizImage(answer)}.png" style="width:250px;"><br>
-        ${answer}
-      </div>
-    `;
+    const item = document.createElement("div");
+    item.style.textAlign = "center";
+    item.appendChild(createImage(makePath("quiz", quizCellType, getOrganImageFileName(answer)), "250px", answer + " の図"));
+    item.appendChild(document.createElement("br"));
+    item.appendChild(document.createTextNode(answer));
+    answerImageDiv.appendChild(item);
   }
 
-  document.getElementById("quiz-answer-desc").innerHTML =
-    descriptions[answer].replace(/\n/g, "<br>");
+  setTextWithLineBreaks(document.getElementById("quiz-answer-desc"), descriptions[answer]);
 }
 
-/* ===============================
-  補助関数
-=============================== */
-
 function quizModeTitle(mode) {
-  return {
-    "img-to-name-easy": "図→細胞小器官名（易）",
+  const titles = {
+    "img-to-name-easy": "図→細胞小器官名",
     "img-to-name-hard": "図→細胞小器官名（難）",
     "img-to-desc": "図→細胞小器官の説明",
     "name-to-img": "細胞小器官名→図",
     "desc-to-img": "細胞小器官の説明→図"
-  }[mode];
+  };
+  return titles[mode] || "細胞小器官問題";
 }
 
 function randomFrom(arr) {
@@ -729,21 +613,26 @@ function randomFrom(arr) {
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    const tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
   }
   return arr;
-}
-
-function getQuizImage(name) {
-  if (name === "細胞骨格") return "アクチンフィラメント";
-  return name;
 }
 
 function restartQuiz() {
   selectQuizMode(quizMode);
 }
 
-</script>
+window.addEventListener("error", function(e) {
+  console.error("エラー発生:", e.message, e.filename, e.lineno, e.colno);
+});
 
+document.addEventListener("DOMContentLoaded", function() {
+  console.log("HTML読み込み完了");
+  console.log("現在のURL:", location.href);
+  show("title");
+});
+</script>
 </body>
 </html>
